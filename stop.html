@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Advanced Stopwatch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: #1e1e2f;
+      color: #fefefe;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .stopwatch-container {
+      background: #2c2c3c;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 10px 10px 20px #151521,
+                  -10px -10px 20px #383850;
+      text-align: center;
+      width: 320px;
+    }
+
+    #display {
+      font-size: 48px;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 15px;
+      background: #3b3b4f;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      box-shadow: inset 2px 2px 5px #1b1b2a, inset -2px -2px 5px #4d4d65;
+    }
+
+    button:hover {
+      background: #50506a;
+    }
+
+    .lap-times {
+      margin-top: 20px;
+      max-height: 150px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .lap-times li {
+      list-style: none;
+      border-bottom: 1px solid #444;
+      padding: 4px 0;
+      font-size: 14px;
+    }
+
+    .title {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #7ee787;
+    }
+  </style>
+</head>
+<body>
+  <div class="stopwatch-container">
+    <div class="title">sachins Stopwatch</div>
+    <div id="display">00:00:00</div>
+    <div class="buttons">
+      <button onclick="start()">Start</button>
+      <button onclick="stop()">Stop</button>
+      <button onclick="reset()">Reset</button>
+      <button onclick="lap()">Lap</button>
+    </div>
+    <ul class="lap-times" id="laps"></ul>
+  </div>
+
+  <script>
+    let startTime, updatedTime, difference = 0;
+    let timerInterval;
+    let running = false;
+    let lapCount = 0;
+
+    function updateTime() {
+      updatedTime = new Date().getTime();
+      difference = updatedTime - startTime;
+
+      let hours = Math.floor(difference / (1000 * 60 * 60));
+      let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      document.getElementById('display').textContent =
+        `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    }
+
+    function pad(unit) {
+      return unit < 10 ? '0' + unit : unit;
+    }
+
+    function start() {
+      if (!running) {
+        startTime = new Date().getTime() - difference;
+        timerInterval = setInterval(updateTime, 1000);
+        running = true;
+      }
+    }
+
+    function stop() {
+      if (running) {
+        clearInterval(timerInterval);
+        running = false;
+      }
+    }
+
+    function reset() {
+      clearInterval(timerInterval);
+      running = false;
+      difference = 0;
+      document.getElementById('display').textContent = "00:00:00";
+      document.getElementById('laps').innerHTML = "";
+      lapCount = 0;
+    }
+
+    function lap() {
+      if (running) {
+        lapCount++;
+        const lapTime = document.getElementById('display').textContent;
+        const lapList = document.getElementById('laps');
+        const listItem = document.createElement('li');
+        listItem.textContent = `Lap ${lapCount}: ${lapTime}`;
+        lapList.insertBefore(listItem, lapList.firstChild);
+      }
+    }
+  </script>
+</body>
+</html>
